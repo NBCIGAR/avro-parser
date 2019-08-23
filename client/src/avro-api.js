@@ -1,0 +1,26 @@
+import axios from 'axios'
+
+const SERVER_URL = 'http://localhost:8081';
+
+const instance = axios.create({
+    baseURL: SERVER_URL,
+    timeout: 1000
+});
+
+export default {
+
+    // (C)reate  
+    parseSchema: (text) => instance.post('avroParser/', {text}),
+
+    // (R)ead  
+    getAll: () => instance.get('todos', {
+        transformResponse: [function (data) {
+            return data ? JSON.parse(data)._embedded.todos : data;
+        }]
+    }),
+    // (U)pdate  
+    updateForId: (id, text, completed) => instance.put('todos/' + id, {title: text, completed: completed}),
+
+    // (D)elete  
+    removeForId: (id) => instance.delete('todos/' + id)
+}
